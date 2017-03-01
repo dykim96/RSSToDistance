@@ -3,22 +3,47 @@ package rtd;
 import java.io.*;
 
 public class RSSToDistance {
+	
+	static int NUMBER_OF_FILES = 1; // TODO
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		MappingTable masterTable = new MappingTable();
-		///input
-		//while(all files read)
-		//	read file into rssList
-		//	MappingTable table = new MappingTable()
-		//	for (int rss : rssList)
-		//		add to table
-		//	for (int i = 0; i < table.getSize(); i++) {
-		//		int rss = table.getRSSList().get(i);
-		//		int masterRSSIndex = masterTable.findRSS(rss);
-		//		if(table.getFrequencyList().get(i) > masterTable.getFrequencyList().get(masterRSSIndex)) {
-		//			masterTable.set(masterRSSIndex, rss, table.getDistanceList().get(i), table.getFrequencyList().get(i));
-		//		}
-		//	}
+
+		/* 
+		 * iterates through all the files and reads each file
+		 * and adds its rss and distance and tracks the freq it occurs
+		 */
+		MappingTable table = new MappingTable();
+        for (int i = 0; i < NUMBER_OF_FILES; ++i)
+        {
+            int dist = i; // TODO
+            File data_file = new File("1.txt"); // TODO find filename
+            Reader file_reader = new FileReader(data_file);
+            BufferedReader reader = new BufferedReader(file_reader);
+
+            String line;
+            while ((line = reader.readLine()) != null)    
+            {
+                int rss  = Integer.parseInt(line);
+                table.add(rss, dist);                
+            }            
+        }   
+        
+        // iterate through the table's data and goes through each rss value and add the highest freq to masterTable
+		for (int i = 0; i < table.getSize(); i++) 
+		{
+			int rss = table.getRSS(i);
+			int masterRSSIndex = masterTable.findRSS(rss);
+			
+			if (masterRSSIndex == -1) // doesnt exists
+			{
+				masterTable.add(table.getData(i));
+			}
+			else if (table.getFreq(i) > masterTable.getFreq(masterRSSIndex)) 
+			{
+				masterTable.set(masterRSSIndex, rss, table.getDist(i), table.getFreq(i));
+			}
+		}
 		
 		///output csv file
 		try {
@@ -40,9 +65,9 @@ public class RSSToDistance {
         sb.append("Distance");
         sb.append('\n');
         for(int i = 0; i < table.getSize(); i++){
-            sb.append(table.getRSSList().get(i));
+            sb.append(table.getRSS(i));
             sb.append(',');
-            sb.append(table.getDistanceList().get(i));
+            sb.append(table.getDist(i));
             sb.append('\n');
         }
         

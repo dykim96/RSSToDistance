@@ -3,92 +3,121 @@ package rtd;
 import java.util.*;
 
 public class MappingTable {
-	private List<Integer> rssList;
-	private List<Integer> distanceList;
-	private List<Integer> frequencyList;
-	private int size;
+	
+	/*
+	 * Private class that contains all necessary components for a data value
+	 */
+	private class Data
+	{
+		private int rss;
+		private int dist;
+		private int freq;
+		
+		private Data (int rss, int dist, int freq)
+		{
+			set(rss, dist, freq);
+		}
+		
+		/* since none of these values can take in a negative,
+		 * if a negative # is given, it won't be set
+		 */		
+		private void set(int rss, int dist, int freq)
+		{
+			if (rss >= 0)
+				this.rss = rss;
+			if (dist >= 0)
+				this.dist = dist;
+			if (freq >= 0)
+				this.freq = freq;
+		}
+		
+		private void addFreq(int freq)
+		{
+			this.freq += freq;
+		}
+		
+		public int getRSS()
+		{ return rss; }
+		
+		private int getDist()
+		{ return dist; }
+		
+		private int getFreq()
+		{ return freq; }
+	}
+	
+	private List<Data> dataList;
 	
 	public MappingTable() {
-		rssList = new ArrayList<Integer>();
-		distanceList = new ArrayList<Integer>();
-		frequencyList = new ArrayList<Integer>();
-		size = 0;
+		dataList = new ArrayList<Data>();
 	}
 	
 	/*
 	 * Add new/existing RSS value and distance to the table.
 	 * 
 	 * If RSS value and distance are new,
-	 * They will be added in manner that rssList is sorted in ascending order
-	 * and corresponding frequency will be initialized to 0
+	 * They will be added
 	 * 
 	 * If RSS value and distance already exist in the table,
 	 * Corresponding frequency will be incremented by 1
 	 * 
-	 * OUTPUT: index of added RSS value and distance in the lists
+	 * OUTPUT: none
 	 */
-	public int add(int rss, int distance) {
-		int index = findRSS(rss);
-		if(index >= 0) {
-			if(distanceList.get(index) == distance)
-				frequencyList.set(index, frequencyList.get(index) + 1);
-		}
-		else {// add in ascending RSS list order
-			if(size == 0 || rssList.get(size - 1) < rss){
-				rssList.add(rss);
-				distanceList.add(distance);
-				frequencyList.add(0);
-				index = size;
-			}
-			else if(rssList.get(0) > rss){
-				rssList.add(0, rss);
-				distanceList.add(0, distance);
-				frequencyList.add(0, 0);
-				index = 0;
-			}
-			else{
-				int lo = 1;
-				int hi = size - 1;
-				while(lo <= hi) {
-					int mid = lo + (hi + lo)/2;
-					if(rss > rssList.get(mid - 1) && rss < rssList.get(mid)){
-						index = mid;
-						break;
-					}
-					else if(rss > rssList.get(mid))
-						lo = mid;
-					else
-						hi = mid;
-				}
-				rssList.add(index, rss);
-				distanceList.add(index, distance);
-				frequencyList.add(index, 0);
-			}
-			size++;
-		}
+	public void add(int rss, int dist) {
 		
-		return index;
+		int index = findRSS(rss);
+		Data data = new Data(rss, dist, 1);
+		
+		if (index == -1) // doesnt exist, so just add it
+		{
+			dataList.add(data);
+		}
+		else // exists so modify existing
+		{
+			data.addFreq(dataList.get(index).getFreq());
+			dataList.set(index, data);
+		}
+	}
+	
+	public void add(Data data)
+	{
+		dataList.add(data);
+	}
+	
+	public int getRSS(int index)
+	{
+		return dataList.get(index).getRSS();
+	}
+	
+	public int getDist(int index)
+	{
+		return dataList.get(index).getDist();
+	}
+	
+	public int getFreq(int index)
+	{
+		return dataList.get(index).getFreq();
+	}
+	
+	public Data getData(int index)
+	{
+		return dataList.get(index);
 	}
 	
 	/*
-	 * Search for the RSS value in the rssList
-	 * and replaces the distance in distanceList with input.
-	 * 
-	 * If a such RSS value does not exist,
-	 * method adds the RSS value and distance into the lists.
-	 */
 	public void set(int rss, int distance, int frequency) {
 		int index = add(rss, distance);
 		if(distanceList.get(index) != distance){
 			distanceList.set(index, distance);
 			frequencyList.set(index, 0);
 		}
-	}
+	}*/
 	
+	/*	
+	 * Sets the dataList at index to a new Data object containing the rss, dist, freq
+	 */
 	public void set(int index, int rss, int distance, int frequency) {
-		rssList.set(index, rss);
-		distanceList.set(index, distance);
-		frequencyList.set(index, frequency);
+		dataList.set(index, new Data(rss, distance, frequency));
 	}
 	
 	/*
@@ -97,25 +126,18 @@ public class MappingTable {
 	 * else returns -1
 	 */
 	public int findRSS(int rss) {
-		if(size == 0)
-			return -1;
-
-		int lo = 0;
-		int hi = size - 1;
-		while(lo <= hi) {
-			int mid = lo + (hi + lo)/2;
-			if(rss < rssList.get(mid))
-				hi = mid;
-			else if(rss > rssList.get(mid))
-				lo = mid;
-			else
-				return mid;
+		
+		for (int i = 0; i < dataList.size(); ++i)
+		{
+			Data data = dataList.get(i);
+			if (data.getRSS() == rss)
+				return i;
 		}
 		
 		return -1;
 	}
 
-	public List<Integer> getRSSList() {
+/*	public List<Integer> getRSSList() {
 		return rssList;
 	}
 	
@@ -125,10 +147,10 @@ public class MappingTable {
 
 	public List<Integer> getFrequencyList() {
 		return frequencyList;
-	}
+	}*/
 	
 	public int getSize() {
-		return size;
+		return dataList.size();
 	}
 
 }
