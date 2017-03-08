@@ -104,15 +104,6 @@ public class MappingTable {
 		return dataList.get(index);
 	}
 	
-	/*
-	public void set(int rss, int distance, int frequency) {
-		int index = add(rss, distance);
-		if(distanceList.get(index) != distance){
-			distanceList.set(index, distance);
-			frequencyList.set(index, 0);
-		}
-	}*/
-	
 	/*	
 	 * Sets the dataList at index to a new Data object containing the rss, dist, freq
 	 */
@@ -137,18 +128,6 @@ public class MappingTable {
 		return -1;
 	}
 
-/*	public List<Integer> getRSSList() {
-		return rssList;
-	}
-	
-	public List<Integer> getDistanceList() {
-		return distanceList;
-	}
-
-	public List<Integer> getFrequencyList() {
-		return frequencyList;
-	}*/
-	
 	public int getSize() {
 		return dataList.size();
 	}
